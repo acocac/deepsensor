@@ -800,11 +800,12 @@ class TaskLoader:
                 If the variable is of an unknown type.
         """
         # TODO: Does this work with instantaneous time?
-        delta_t = pd.Timedelta(delta_t, unit=self.time_freq)
         if isinstance(var, (xr.Dataset, xr.DataArray)):
             if "time" in var.dims:
-                var = var.sel(time=date + delta_t)
+                # var = var.sel(time=date + delta_t)
+                var = var.isel(time=var.indexes["time"].get_loc(date) + delta_t)
         elif isinstance(var, (pd.DataFrame, pd.Series)):
+            delta_t = pd.Timedelta(delta_t, unit=self.time_freq)
             if "time" in var.index.names:
                 var = var[var.index.get_level_values("time") == date + delta_t]
         else:

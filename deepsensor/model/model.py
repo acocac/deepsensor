@@ -355,10 +355,16 @@ class DeepSensorModel(ProbabilisticModel):
             lead_times = []
             for target_set_idx, dt in enumerate(target_delta_t):
                 target_set_dim = self.task_loader.target_dims[target_set_idx]
-                lead_times += [
-                    pd.Timedelta(dt, unit=self.task_loader.time_freq)
-                    for _ in range(target_set_dim)
-                ]
+                if self.task_loader.time_freq == "ME":
+                    lead_times += [
+                        pd.Timedelta(dt, unit="D")
+                        for _ in range(target_set_dim)
+                    ]
+                else:
+                    lead_times += [
+                        pd.Timedelta(dt, unit=self.task_loader.time_freq)
+                        for _ in range(target_set_dim)
+                    ]
             forecasting_mode = True
         else:
             forecasting_mode = False
